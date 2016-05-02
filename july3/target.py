@@ -1,6 +1,7 @@
 import os
 
-from july3 import rules
+
+targets = {}
 
 
 class Target:
@@ -35,8 +36,8 @@ class Target:
         if isinstance(dependency, Target):
             return dependency
 
-        if dependency in rules:
-            return rules[dependency]
+        if dependency in targets:
+            return targets[dependency]
 
         return Target(dependency)
 
@@ -45,8 +46,8 @@ class Target:
 
     def __call__(self, command):
         self.command = command
-        rules[str(self.name)] = self
-        rules[command.__name__] = self
+        targets[str(self.name)] = self
+        targets[command.__name__] = self
         return self
 
     def is_made(self):
