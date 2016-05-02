@@ -15,8 +15,8 @@ class DebianPackage(Target):
         return 0
 
     def __str__(self):
-        return 'apt-get install '.join(self.packages)
+        return 'apt-get install %s' % ' '.join(self.packages)
 
     @staticmethod
     def command(target):
-        run('sudo apt-get install -y ' % ' '.join(target.packages))
+        run('sudo apt-get install -y %s' % ' '.join(target.packages))
