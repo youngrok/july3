@@ -1,4 +1,5 @@
-from setuptools import setup
+from setuptools import setup, find_packages
+
 setup(name='july3',
       description='Deployment automation tool',
       author='Youngrok Pak',
@@ -6,8 +7,7 @@ setup(name='july3',
       keywords= 'fabric pycrypto ecdsa',
       url='https://github.com/youngrok/july3',
       version='0.0.1',
-      packages=['july3',
-                ],
+      packages=find_packages(),
       package_data={'july3': ['files/*'],},
       classifiers = [
                      'Development Status :: 3 - Alpha',

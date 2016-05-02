@@ -1,13 +1,10 @@
-from fabric.context_managers import settings, lcd
-from fabric.operations import local, os
-
 from july3.target import Target
 from july3.util import run
 
 
 class DebianPackage(Target):
 
-    def __init__(self, *packages, dependencies=None):
+    def __init__(self, packages, dependencies=None):
         self.packages = packages
         super().__init__(str(self), dependencies)
 
