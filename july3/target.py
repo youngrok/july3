@@ -60,6 +60,15 @@ class Target:
         return 0
 
 
+class VirtualTarget(Target):
+
+    def is_made(self):
+        return False
+
+    def updated(self):
+        return 0
+
+
 class NoTargetRuleSpecified(Exception):
     pass
 

@@ -8,11 +8,15 @@ class PythonPackage(Target):
     def __init__(self, *packages, virtualenv=None, dependencies=None):
         self.packages = packages
         self.virtualenv = virtualenv
+        self.pip = 'pip'
+        if virtualenv:
+            self.pip = self.virtualenv + '/' + self.pip
+
         super().__init__(str(self), dependencies)
 
     def is_made(self):
         return set(self.packages).issubset(
-            {package.split(' ')[0] for package in run('pip list').stdout.splitlines()}
+            {package.split(' ')[0] for package in run('{0} list'.format(self.pip)).stdout.splitlines()}
         )
 
     def updated(self):
@@ -23,7 +27,4 @@ class PythonPackage(Target):
 
     @staticmethod
     def command(target):
-        run('{virtualenv}pip install {packages}'.format(
-            virtualenv=target.virtualenv + '/' if target.virtualenv else '',
-            packages=' '.join(target.packages))
-        )
+        run('{0} install {packages}'.format(target.pip, packages=' '.join(target.packages)))
