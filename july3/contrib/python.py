@@ -5,8 +5,9 @@ from july3.util import run
 
 class PythonPackage(Target):
 
-    def __init__(self, *packages, dependencies=None):
+    def __init__(self, *packages, virtualenv=None, dependencies=None):
         self.packages = packages
+        self.virtualenv = virtualenv
         super().__init__(str(self), dependencies)
 
     def is_made(self):
@@ -22,4 +23,7 @@ class PythonPackage(Target):
 
     @staticmethod
     def command(target):
-        run('pip install %s' % ' '.join(target.packages))
+        run('{virtualenv}pip install {packages}'.format(
+            virtualenv=target.virtualenv + '/' if target.virtualenv else '',
+            packages=' '.join(target.packages))
+        )
