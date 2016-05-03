@@ -10,7 +10,7 @@ class PythonPackage(Target):
         self.virtualenv = virtualenv
         self.pip = pip
         if virtualenv:
-            self.pip = self.virtualenv + '/' + self.pip
+            self.pip = self.virtualenv + '/bin/' + self.pip
         if sudo:
             self.pip = 'sudo ' + self.pip
 
