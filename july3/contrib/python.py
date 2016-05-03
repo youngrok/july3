@@ -5,10 +5,10 @@ from july3.util import run
 
 class PythonPackage(Target):
 
-    def __init__(self, *packages, virtualenv=None, dependencies=None):
+    def __init__(self, *packages, pip='pip3', virtualenv=None, dependencies=None):
         self.packages = packages
         self.virtualenv = virtualenv
-        self.pip = 'pip'
+        self.pip = pip
         if virtualenv:
             self.pip = self.virtualenv + '/' + self.pip
 
