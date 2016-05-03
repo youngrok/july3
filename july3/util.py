@@ -1,3 +1,4 @@
+import logging
 import subprocess
 
 
@@ -9,17 +10,19 @@ class ProcessResult:
 
 
 def run(command):
+    print(command)
     p = subprocess.Popen(command,
                          shell=True,
                          stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE)
+                         stdin=subprocess.PIPE,
+                         stderr=subprocess.PIPE)
 
     (stdout, stderr) = p.communicate()
 
     if stderr:
-        print(stderr)
+        logging.error(stderr)
     else:
-        stderr
+        pass
 
     return ProcessResult(stdout, stderr, p.returncode)
 
