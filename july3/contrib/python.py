@@ -5,12 +5,14 @@ from july3.util import run
 
 class PythonPackage(Target):
 
-    def __init__(self, *packages, pip='pip3', virtualenv=None, dependencies=None):
+    def __init__(self, *packages, pip='pip3', virtualenv=None, sudo=False, dependencies=None):
         self.packages = packages
         self.virtualenv = virtualenv
         self.pip = pip
         if virtualenv:
             self.pip = self.virtualenv + '/' + self.pip
+        if sudo:
+            self.pip = 'sudo ' + self.pip
 
         super().__init__(str(self), dependencies)
 
