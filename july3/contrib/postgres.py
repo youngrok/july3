@@ -13,7 +13,7 @@ class PostgresUser(Target):
         super().__init__('postgresuser:%s' % (self.user, ), dependencies)
 
     def is_made(self):
-        return psql("SELECT COUNT(*) FROM pg_user WHERE usename = '%s';" % self.user, '-t -A') != '0'
+        return psql("SELECT COUNT(*) FROM pg_user WHERE usename = '%s';" % self.user, '-t -A', capture=True) != '0'
 
     def updated(self):
         return 0
@@ -39,23 +39,24 @@ class PostgresDatabase(Target):
         super().__init__('postgresdb:%s/%s' % (self.dbname, self.user), dependencies)
 
     def is_made(self):
-        return psql(r'\l %s' % self.dbname, '-t -A')
+        return psql(r'\l %s' % self.dbname, '-t -A', capture=True)
 
     def updated(self):
         return 0
 
     @staticmethod
     def command(target):
-        if 'psql_sudo' in env:
-            cmd = 'sudo -u {0} '.format(env.psql_sudo)
 
-        cmd += 'createdb --owner {owner} --template {template} --encoding={encoding} --lc-ctype={locale} --lc-collate={locale} {name}'.format(
+        cmd = 'createdb --owner {owner} --template {template} --encoding={encoding} --lc-ctype={locale} --lc-collate={locale} {name}'.format(
             owner=target.user,
             name=target.dbname,
             template=env.get('postgres_template', 'template0'),
             encoding=env.get('postgres_encoding', 'UTF8'),
             locale=env.get('postgres_locale', 'en_US.UTF-8'),
         )
+
+        if 'psql_sudo' in env:
+            cmd = 'sudo -u {0} '.format(env.psql_sudo) + cmd
 
         run(cmd)
 
@@ -72,9 +73,10 @@ class PostgresConnection(PostgresDatabase):
         self.name = 'postgres:%s/%s' % (dbname, user)
 
 
-def psql(query, options=''):
-    if 'psql_sudo' in env:
-        command = 'sudo -u {0} '.format(env.psql_sudo)
+def psql(query, options='', capture=False):
+    command = 'psql postgres %s -c "%s"' % (options, query)
 
-    command += 'psql postgres %s -c "%s"' % (options, query)
-    return run(command).stdout
+    if 'psql_sudo' in env:
+        command = 'sudo -u {0} '.format(env.psql_sudo) + command
+
+    return run(command, capture=capture).stdout

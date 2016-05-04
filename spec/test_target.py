@@ -57,7 +57,7 @@ class TestNonFileTarget(unittest.TestCase):
 
     def test_non_file_target_rule(self):
         PythonPackage('toc').make()
-        self.assertTrue('toc' in run('pip show toc').stdout)
+        self.assertTrue('toc' in run('pip show toc', capture=True).stdout)
 
     def test_depend_non_file_target(self):
 
@@ -73,5 +73,5 @@ class TestNonFileTarget(unittest.TestCase):
 
         nginx_site_file.make()
 
-        self.assertTrue('toc' in run('pip show toc').stdout)
+        self.assertTrue('toc' in run('pip show toc', capture=True).stdout)
         self.assertTrue(env.web_server_name in open(env.build_path + env.project_name).read())

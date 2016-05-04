@@ -2,6 +2,8 @@ import logging
 import subprocess
 from subprocess import CalledProcessError
 
+import sys
+
 
 class ProcessResult:
     def __init__(self, stdout, stderr, returncode):
@@ -10,20 +12,15 @@ class ProcessResult:
         self.returncode = returncode
 
 
-def run(command, ignore_error=False):
+def run(command, capture=False):
     print(command)
     p = subprocess.Popen(command,
                          shell=True,
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.PIPE)
+                         stdout=subprocess.PIPE if capture else sys.stdout)
 
     (stdout, stderr) = p.communicate()
 
-    if stderr:
-        logging.error(stderr.decode())
-
-    if not ignore_error and p.returncode != 0:
+    if not capture and p.returncode != 0:
         raise CalledProcessError(p.returncode, command, stdout, stderr)
 
     return ProcessResult(stdout, stderr, p.returncode)

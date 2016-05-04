@@ -20,7 +20,7 @@ class PythonPackage(Target):
 
     def is_made(self):
         return set(self.packages).issubset(
-            {package.split(' ')[0] for package in run('{0} list'.format(self.pip)).stdout.splitlines()}
+            {package.split(' ')[0] for package in run('{0} list'.format(self.pip), capture=True).stdout.splitlines()}
         )
 
     def updated(self):
