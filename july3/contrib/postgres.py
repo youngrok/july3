@@ -46,15 +46,20 @@ class PostgresDatabase(Target):
 
     @staticmethod
     def command(target):
-        run('''createdb --owner %(owner)s --template %(template)s \
-            --encoding=%(encoding)s --lc-ctype=%(locale)s \
-            --lc-collate=%(locale)s %(name)s''' % {
-            'owner': target.user,
-            'name': target.dbname,
-            'template': env.get('postgres_template', 'template0'),
-            'encoding': env.get('postgres_encoding', 'UTF8'),
-            'locale': env.get('postgres_locale', 'en_US.UTF-8'),
-        })
+        if 'psql_sudo' in env:
+            cmd = 'sudo -u {0} '.format(env.psql_sudo)
+
+        cmd += '''createdb --owner {owner} --template {template}
+            --encoding={encoding} --lc-ctype={locale}
+            --lc-collate={locale} {name}'''.format(
+            owner=target.user,
+            name=target.dbname,
+            template=env.get('postgres_template', 'template0'),
+            encoding=env.get('postgres_encoding', 'UTF8'),
+            locale=env.get('postgres_locale', 'en_US.UTF-8'),
+        )
+
+        run(cmd)
 
 
 class PostgresConnection(PostgresDatabase):
@@ -71,7 +76,7 @@ class PostgresConnection(PostgresDatabase):
 
 def psql(query, options=''):
     if 'psql_sudo' in env:
-        command = 'sudo -u {0}'.format(env.psql_sudo)
+        command = 'sudo -u {0} '.format(env.psql_sudo)
 
-    command += ' psql postgres %s -c "%s"' % (options, query)
+    command += 'psql postgres %s -c "%s"' % (options, query)
     return run(command).stdout
