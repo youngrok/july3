@@ -31,7 +31,7 @@ def run(command, ignore_error=False):
 
 def render_template(source, target, context):
     with open(source) as s:
-        with open(target) as t:
+        with open(target, 'w') as t:
             t.write(s.read().format_map(context))
 
 
