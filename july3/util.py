@@ -29,6 +29,12 @@ def run(command):
     return out
 
 
+def render_template(source, target, context):
+    with open(source) as s:
+        with open(target) as t:
+            t.write(s.read().format_map(context))
+
+
 def symlink(source, target):
     run('sudo rm -f %s' % (target,))
     run('sudo ln -s %s %s' % (source, target))
