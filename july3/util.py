@@ -1,5 +1,6 @@
 import logging
 import subprocess
+from subprocess import CalledProcessError
 
 
 class ProcessResult:
@@ -9,7 +10,7 @@ class ProcessResult:
         self.returncode = returncode
 
 
-def run(command):
+def run(command, ignore_error=False):
     print(command)
     p = subprocess.Popen(command,
                          shell=True,
@@ -21,12 +22,11 @@ def run(command):
 
     if stderr:
         logging.error(stderr.decode())
-    else:
-        pass
+
+    if not ignore_error and p.returncode != 0:
+        raise CalledProcessError(p.returncode, command, stdout, stderr)
 
     return ProcessResult(stdout, stderr, p.returncode)
-
-    return out
 
 
 def render_template(source, target, context):
