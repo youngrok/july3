@@ -20,7 +20,7 @@ def run(command):
     (stdout, stderr) = p.communicate()
 
     if stderr:
-        logging.error(stderr)
+        logging.error(stderr.decode())
     else:
         pass
 
