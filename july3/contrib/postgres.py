@@ -70,5 +70,8 @@ class PostgresConnection(PostgresDatabase):
 
 
 def psql(query, options=''):
-    command = 'psql postgres %s -c "%s"' % (options, query)
+    if 'psql_sudo' in env:
+        command = 'sudo -u {0}'.format(env.psql_sudo)
+
+    command += ' psql postgres %s -c "%s"' % (options, query)
     return run(command).stdout
