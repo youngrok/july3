@@ -49,9 +49,7 @@ class PostgresDatabase(Target):
         if 'psql_sudo' in env:
             cmd = 'sudo -u {0} '.format(env.psql_sudo)
 
-        cmd += '''createdb --owner {owner} --template {template}
-            --encoding={encoding} --lc-ctype={locale}
-            --lc-collate={locale} {name}'''.format(
+        cmd += 'createdb --owner {owner} --template {template} --encoding={encoding} --lc-ctype={locale} --lc-collate={locale} {name}'.format(
             owner=target.user,
             name=target.dbname,
             template=env.get('postgres_template', 'template0'),
