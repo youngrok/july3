@@ -22,3 +22,11 @@ class DebianPackage(Target):
         run('sudo apt-get install -y %s' % ' '.join(target.packages))
 
 
+class Command(Target):
+
+    def is_made(self):
+        return run('type {0}'.format(self.name), capture=True).returncode == 0
+
+
+    def updated(self):
+        return 0
