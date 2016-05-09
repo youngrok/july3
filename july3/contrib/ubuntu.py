@@ -9,7 +9,7 @@ class DebianPackage(Target):
         super().__init__(str(self), dependencies)
 
     def is_made(self):
-        run("dpkg-query -Wf'${db:Status-abbrev}' %s" % ' '.join(self.packages), capture=True)
+        return run("dpkg-query -Wf'${db:Status-abbrev}' %s" % ' '.join(self.packages), capture=True).returncode == 0
 
     def updated(self):
         return 0
@@ -20,3 +20,5 @@ class DebianPackage(Target):
     @staticmethod
     def command(target):
         run('sudo apt-get install -y %s' % ' '.join(target.packages))
+
+
