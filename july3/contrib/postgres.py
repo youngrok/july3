@@ -73,7 +73,7 @@ class PostgresConnection(PostgresDatabase):
         self.name = 'postgres:%s/%s' % (dbname, user)
 
 
-def psql(query, options='', capture=False):
+def psql(query, options='', capture=True):
     command = 'psql postgres %s -c "%s"' % (options, query)
 
     if 'psql_sudo' in env:

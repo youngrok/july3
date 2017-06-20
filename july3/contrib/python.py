@@ -31,7 +31,8 @@ class PythonPackage(Target):
 
     @staticmethod
     def command(target):
-        run('{0} install {packages}'.format(target.pip, packages=' '.join(target.packages)))
+        packages = ' '.join(target.packages)
+        run(f'{target.pip} install {packages}')
 
 
 class PyEnv(Target):

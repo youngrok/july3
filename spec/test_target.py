@@ -22,7 +22,8 @@ class TestFileTarget(unittest.TestCase):
         shutil.rmtree('test-build', ignore_errors=True)
 
     def test_file_depends_file(self):
-        @Target('test-build/' + env.project_name, dependencies=['files/nginx-site.mako', 'test-build'])
+
+        @Target(f'test-build/{env.project_name}', dependencies=['files/nginx-site.mako', 'test-build'])
         def nginx_site_file(target):
             with open(target.name, 'w') as f:
                 f.write(Template(filename=target.dependencies[0]).render(**env))
@@ -35,7 +36,7 @@ class TestFileTarget(unittest.TestCase):
         self.assertTrue(env.web_server_name in open(env.build_path + env.project_name).read())
 
     def test_file_depends_non_existing_file(self):
-        @Target('test-build/' + env.project_name + '.x', dependencies=['files/nginx-site.mako.x'])
+        @Target(f'test-build/{env.project_name}.x', dependencies=['files/nginx-site.mako.x'])
         def nginx_site_file(rule):
             with open(rule.target.filename, 'w') as f:
                 f.write(Template(filename=rule.dependencies[0]).render(**env))
@@ -65,7 +66,7 @@ class TestNonFileTarget(unittest.TestCase):
 
         toc_install = PythonPackage('toc')
 
-        @Target('test-build/' + env.project_name, dependencies=['files/nginx-site.mako', toc_install])
+        @Target(f'test-build/{env.project_name}', dependencies=['files/nginx-site.mako', toc_install])
         def nginx_site_file(target):
             with open(target.name, 'w') as f:
                 f.write(Template(filename=target.dependencies[0]).render(**env))

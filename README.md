@@ -2,16 +2,17 @@
 
 july3 is [Make](https://en.wikipedia.org/wiki/Make) with Python syntax. See this july3file.py example.
 
-    @Target('test-build/' + env.project_name, dependencies=['files/nginx-site.mako', 'test-build'])
-    def nginx_site_file(target):
-        with open(target.name, 'w') as f:
-            f.write(Template(filename=target.dependencies[0]).render(**env))
+```
+@Target(f'test-build/{env.project_name}', dependencies=['files/nginx-site.mako', 'test-build'])
+def nginx_site_file(target):
+    with open(target.name, 'w') as f:
+        f.write(Template(filename=target.dependencies[0]).render(**env))
 
 
-    @Target('test-build')
-    def build_dir(target):
-        os.makedirs(target.name)
-                
+@Target('test-build')
+def build_dir(target):
+    os.makedirs(target.name)
+```                
 You can build target like this:
 
     july3 nginx_site_file

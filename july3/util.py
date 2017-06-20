@@ -12,7 +12,7 @@ class ProcessResult:
         self.returncode = returncode
 
 
-def run(command, capture=False):
+def run(command, capture=True):
     print(command)
     p = subprocess.Popen(command,
                          shell=True,

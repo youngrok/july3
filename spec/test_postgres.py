@@ -8,8 +8,8 @@ from july3.util import run
 class TestPostgresTarget(unittest.TestCase):
 
     def tearDown(self):
-        run('dropdb j3db', capture=True)
-        run('psql postgres -c "DROP USER j3test"', capture=True)
+        run('dropdb j3db')
+        run('psql postgres -c "DROP USER j3test"')
 
     def test_postgres_user_and_db(self):
 
@@ -18,7 +18,7 @@ class TestPostgresTarget(unittest.TestCase):
 
         postgres_db.make()
 
-        self.assertEqual('1', run(r'psql -U j3test j3db -t -c "select 1"', capture=True).stdout.strip())
+        self.assertEqual('1', run(r'psql -U j3test j3db -t -c "select 1"').stdout.strip())
 
 
     def test_postgres_connection(self):
@@ -27,5 +27,5 @@ class TestPostgresTarget(unittest.TestCase):
 
         postgres.make()
 
-        self.assertEqual('1', run(r'psql -U j3test j3db -t -c "select 1"', capture=True).stdout.strip())
+        self.assertEqual('1', run(r'psql -U j3test j3db -t -c "select 1"').stdout.strip())
 
