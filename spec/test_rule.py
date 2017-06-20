@@ -25,12 +25,12 @@ class TestFileRule(unittest.TestCase):
 
         @Rule(f'test-build/{env.project_name}', dependencies=['files/nginx-site.mako', 'test-build'])
         def nginx_site_file(rule):
-            with open(rule.name, 'w') as f:
+            with open(rule.target, 'w') as f:
                 f.write(Template(filename=rule.dependencies[0]).render(**env))
 
         @Rule('test-build')
         def build_dir(rule):
-            os.makedirs(rule.name)
+            os.makedirs(rule.target)
 
         nginx_site_file.make()
         self.assertTrue(env.web_server_name in open(env.build_path + env.project_name).read())
@@ -68,7 +68,7 @@ class TestNonFileRule(unittest.TestCase):
 
         @Rule(f'test-build/{env.project_name}', dependencies=['files/nginx-site.mako', toc_install])
         def nginx_site_file(rule):
-            with open(rule.name, 'w') as f:
+            with open(rule.target, 'w') as f:
                 f.write(Template(filename=rule.dependencies[0]).render(**env))
 
 

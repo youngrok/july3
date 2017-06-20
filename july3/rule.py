@@ -1,7 +1,32 @@
 import os
 
 
-rules = {}
+class RuleGraph:
+
+    def __init__(self):
+        self.rules = {}
+
+    def register(self, rule):
+        self.rules[str(rule.target)] = rule
+        self.rules[rule.command.__name__] = rule
+
+    def find_rule(self, dependency):
+        if isinstance(dependency, Rule):
+            return dependency
+
+        if dependency in self.rules:
+            return self.rules[dependency]
+
+        return Rule(dependency)
+
+    def make(self, target_name=None):
+        if not target_name:
+            target_name = next(iter(self.rules.keys()))
+
+        self.rules[target_name].make()
+
+
+rules = RuleGraph()
 
 
 class Rule:
@@ -14,7 +39,7 @@ class Rule:
         need_update = False
 
         for d in self.dependencies:
-            dependency_rule = self.find_rule(d)
+            dependency_rule = rules.find_rule(d)
             dependency_rule.make()
 
             if dependency_rule.updated() > self.updated():
@@ -31,23 +56,12 @@ class Rule:
 
         self.command(self)
 
-
-    def find_rule(self, dependency):
-        if isinstance(dependency, Rule):
-            return dependency
-
-        if dependency in rules:
-            return rules[dependency]
-
-        return Rule(dependency)
-
     def __str__(self):
-        return self.target
+        return str(self.target)
 
     def __call__(self, command):
         self.command = command
-        rules[str(self.target)] = self
-        rules[command.__name__] = self
+        rules.register(self)
         return self
 
     def is_made(self):

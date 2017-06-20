@@ -17,7 +17,7 @@ class TestGit(unittest.TestCase):
 
         @Rule('test-build')
         def build_dir(rule):
-            os.makedirs(rule.name)
+            os.makedirs(rule.target)
 
         source_update = GitUpdated('git@github.com:youngrok/july3.git', 'test-build/july3', dependencies=[build_dir])
         source_update.make()
