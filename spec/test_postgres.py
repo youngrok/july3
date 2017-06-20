@@ -5,7 +5,7 @@ from july3.contrib.postgres import PostgresUser, PostgresDatabase, PostgresConne
 from july3.util import run
 
 
-class TestPostgresTarget(unittest.TestCase):
+class TestPostgresRule(unittest.TestCase):
 
     def tearDown(self):
         run('dropdb j3db')

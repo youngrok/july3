@@ -1,8 +1,8 @@
-from july3.target import Target
+from july3.rule import Rule
 from july3.util import run
 
 
-class DebianPackage(Target):
+class DebianPackage(Rule):
 
     def __init__(self, packages, dependencies=None):
         self.packages = packages
@@ -18,14 +18,14 @@ class DebianPackage(Target):
         return 'apt-get install %s' % ' '.join(self.packages)
 
     @staticmethod
-    def command(target):
-        run('sudo apt-get install -y %s' % ' '.join(target.packages))
+    def command(rule):
+        run('sudo apt-get install -y %s' % ' '.join(rule.packages))
 
 
-class Command(Target):
+class Command(Rule):
 
     def is_made(self):
-        return run('type {0}'.format(self.name), capture=True).returncode == 0
+        return run('type {0}'.format(self.target), capture=True).returncode == 0
 
 
     def updated(self):

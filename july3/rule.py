@@ -1,20 +1,20 @@
 import os
 
 
-targets = {}
+rules = {}
 
 
-class Target:
+class Rule:
 
-    def __init__(self, name, dependencies=None):
-        self.name = name
+    def __init__(self, target, dependencies=None):
+        self.target = target
         self.dependencies = dependencies if dependencies else []
 
     def make(self):
         need_update = False
 
         for d in self.dependencies:
-            dependency_rule = self.find_target(d)
+            dependency_rule = self.find_rule(d)
             dependency_rule.make()
 
             if dependency_rule.updated() > self.updated():
@@ -27,40 +27,40 @@ class Target:
             return
 
         if not hasattr(self, 'command'):
-            raise NoTargetRuleSpecified(self.name)
+            raise NoCommandSpecified(self.target)
 
         self.command(self)
 
 
-    def find_target(self, dependency):
-        if isinstance(dependency, Target):
+    def find_rule(self, dependency):
+        if isinstance(dependency, Rule):
             return dependency
 
-        if dependency in targets:
-            return targets[dependency]
+        if dependency in rules:
+            return rules[dependency]
 
-        return Target(dependency)
+        return Rule(dependency)
 
     def __str__(self):
-        return self.name
+        return self.target
 
     def __call__(self, command):
         self.command = command
-        targets[str(self.name)] = self
-        targets[command.__name__] = self
+        rules[str(self.target)] = self
+        rules[command.__name__] = self
         return self
 
     def is_made(self):
-        return os.path.exists(self.name)
+        return os.path.exists(self.target)
 
     def updated(self):
         if self.is_made():
-            return os.path.getmtime(self.name)
+            return os.path.getmtime(self.target)
 
         return 0
 
 
-class VirtualTarget(Target):
+class VirtualRule(Rule):
 
     def is_made(self):
         return False
@@ -69,6 +69,6 @@ class VirtualTarget(Target):
         return 0
 
 
-class NoTargetRuleSpecified(Exception):
+class NoCommandSpecified(Exception):
     pass
 

@@ -1,11 +1,11 @@
 import os.path
 
 from july3 import env
-from july3.target import Target
+from july3.rule import Rule
 from july3.util import run
 
 
-class GitUpdated(Target):
+class GitUpdated(Rule):
 
     def __init__(self, url, path, dependencies=None):
         super().__init__('git clone %s %s' % (url, path), dependencies=dependencies)
@@ -16,8 +16,8 @@ class GitUpdated(Target):
         return False
 
     @staticmethod
-    def command(target):
-        if os.path.exists(target.path):
-            run("cd %s; ssh-agent bash -c 'ssh-add %s; git pull'" % (target.path, env.deploy_key_file))
+    def command(rule):
+        if os.path.exists(rule.path):
+            run("cd %s; ssh-agent bash -c 'ssh-add %s; git pull'" % (rule.path, env.deploy_key_file))
         else:
-            run("ssh-agent bash -c 'ssh-add %s; git clone %s %s'" % (env.deploy_key_file, target.url, target.path))
+            run("ssh-agent bash -c 'ssh-add %s; git clone %s %s'" % (env.deploy_key_file, rule.url, rule.path))

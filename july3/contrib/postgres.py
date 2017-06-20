@@ -1,9 +1,9 @@
 from july3 import env
-from july3.target import Target
+from july3.rule import Rule
 from july3.util import run
 
 
-class PostgresUser(Target):
+class PostgresUser(Rule):
 
     def __init__(self, user, password, password_encrypted=False, superuser=False, dependencies=None):
         self.user = user
@@ -19,18 +19,18 @@ class PostgresUser(Target):
         return 0
 
     @staticmethod
-    def command(target):
+    def command(rule):
         options = [
-            'SUPERUSER' if target.superuser else 'NOSUPERUSER',
+            'SUPERUSER' if rule.superuser else 'NOSUPERUSER',
             'INHERIT',
             'LOGIN',
-            "%s PASSWORD '%s'" % ('ENCRYPTED' if target.password_encrypted else 'UNENCRYPTED', target.password)
+            "%s PASSWORD '%s'" % ('ENCRYPTED' if rule.password_encrypted else 'UNENCRYPTED', rule.password)
         ]
 
-        psql("CREATE USER %s %s;" % (target.user, ' '.join(options)))
+        psql("CREATE USER %s %s;" % (rule.user, ' '.join(options)))
 
 
-class PostgresDatabase(Target):
+class PostgresDatabase(Rule):
 
     def __init__(self, dbname, user, password, dependencies=None):
         self.dbname = dbname
@@ -45,11 +45,11 @@ class PostgresDatabase(Target):
         return 0
 
     @staticmethod
-    def command(target):
+    def command(rule):
 
         cmd = 'createdb --owner {owner} --template {template} --encoding={encoding} --lc-ctype={locale} --lc-collate={locale} {name}'.format(
-            owner=target.user,
-            name=target.dbname,
+            owner=rule.user,
+            name=rule.dbname,
             template=env.get('postgres_template', 'template0'),
             encoding=env.get('postgres_encoding', 'UTF8'),
             locale=env.get('postgres_locale', 'en_US.UTF-8'),

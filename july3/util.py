@@ -26,14 +26,14 @@ def run(command, capture=True):
     return ProcessResult(stdout, stderr, p.returncode)
 
 
-def render_template(source, target, context):
+def render_template(source, rule, context):
     with open(source) as s:
-        with open(target, 'w') as t:
+        with open(rule, 'w') as t:
             t.write(s.read().format_map(context))
 
 
-def symlink(source, target):
-    run('sudo rm -f %s' % (target,))
-    run('sudo ln -s %s %s' % (source, target))
+def symlink(source, rule):
+    run('sudo rm -f %s' % (rule,))
+    run('sudo ln -s %s %s' % (source, rule))
 
 

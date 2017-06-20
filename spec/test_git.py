@@ -4,7 +4,7 @@ import unittest
 
 from july3 import env
 from july3.contrib.git import GitUpdated
-from july3.target import Target
+from july3.rule import Rule
 
 
 class TestGit(unittest.TestCase):
@@ -15,9 +15,9 @@ class TestGit(unittest.TestCase):
     def test_updated(self):
         env.deploy_key_file = '~/.ssh/id_rsa'
 
-        @Target('test-build')
-        def build_dir(target):
-            os.makedirs(target.name)
+        @Rule('test-build')
+        def build_dir(rule):
+            os.makedirs(rule.name)
 
         source_update = GitUpdated('git@github.com:youngrok/july3.git', 'test-build/july3', dependencies=[build_dir])
         source_update.make()
