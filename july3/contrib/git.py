@@ -5,7 +5,7 @@ from july3.rule import Rule
 from july3.util import run
 
 
-class GitUpdated(Rule):
+class GitPull(Rule):
 
     def __init__(self, url, path, dependencies=None):
         super().__init__('git clone %s %s' % (url, path), dependencies=dependencies)

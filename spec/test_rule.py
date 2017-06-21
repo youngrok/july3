@@ -56,7 +56,7 @@ class TestNonFileRule(unittest.TestCase):
         shutil.rmtree('test-build', ignore_errors=True)
         run('yes | pip uninstall toc')
 
-    def test_non_file_rule_rule(self):
+    def test_non_file_rule(self):
         PythonPackage('toc').make()
         self.assertTrue('toc' in run('pip show toc', capture=True).stdout)
 

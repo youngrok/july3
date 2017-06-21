@@ -3,7 +3,7 @@ import shutil
 import unittest
 
 from july3 import env
-from july3.contrib.git import GitUpdated
+from july3.contrib.git import GitPull
 from july3.rule import Rule
 
 
@@ -19,7 +19,7 @@ class TestGit(unittest.TestCase):
         def build_dir(rule):
             os.makedirs(rule.target)
 
-        source_update = GitUpdated('git@github.com:youngrok/july3.git', 'test-build/july3', dependencies=[build_dir])
+        source_update = GitPull('git@github.com:youngrok/july3.git', 'test-build/july3', dependencies=[build_dir])
         source_update.make()
 
         self.assertTrue(os.path.exists('test-build/july3/setup.py'))

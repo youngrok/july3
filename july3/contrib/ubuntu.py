@@ -19,7 +19,7 @@ class DebianPackage(Rule):
 
     @staticmethod
     def command(rule):
-        run('sudo apt-get install -y %s' % ' '.join(rule.packages))
+        run('sudo apt-get install --quiet -y %s' % ' '.join(rule.packages))
 
 
 class Command(Rule):

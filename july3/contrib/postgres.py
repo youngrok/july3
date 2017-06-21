@@ -13,7 +13,7 @@ class PostgresUser(Rule):
         super().__init__('postgresuser:%s' % (self.user, ), dependencies)
 
     def is_made(self):
-        return psql("SELECT COUNT(*) FROM pg_user WHERE usename = '%s';" % self.user, '-t -A', capture=True) != '0'
+        return psql("SELECT COUNT(*) FROM pg_user WHERE usename = '%s';" % self.user, '-t -A', capture=True).strip() != '0'
 
     def updated(self):
         return 0
@@ -26,7 +26,6 @@ class PostgresUser(Rule):
             'LOGIN',
             "%s PASSWORD '%s'" % ('ENCRYPTED' if rule.password_encrypted else 'UNENCRYPTED', rule.password)
         ]
-
         psql("CREATE USER %s %s;" % (rule.user, ' '.join(options)))
 
 
@@ -73,7 +72,7 @@ class PostgresConnection(PostgresDatabase):
         self.name = 'postgres:%s/%s' % (dbname, user)
 
 
-def psql(query, options='', capture=True):
+def psql(query, options='', capture=False):
     command = 'psql postgres %s -c "%s"' % (options, query)
 
     if 'psql_sudo' in env:

@@ -3,6 +3,7 @@ import subprocess
 from subprocess import CalledProcessError
 
 import sys
+from tempfile import NamedTemporaryFile
 
 
 class ProcessResult:
@@ -12,24 +13,38 @@ class ProcessResult:
         self.returncode = returncode
 
 
-def run(command, capture=True):
+def run(command, capture=False):
+    if capture:
+        return subprocess.run(command, shell=True, encoding='utf8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
     print(command)
-    p = subprocess.Popen(command,
-                         shell=True,
-                         stdout=subprocess.PIPE if capture else sys.stdout)
-
-    (stdout, stderr) = p.communicate()
-
-    if not capture and p.returncode != 0:
-        raise CalledProcessError(p.returncode, command, stdout, stderr)
-
-    return ProcessResult(stdout, stderr, p.returncode)
+    return subprocess.run(command, shell=True)
 
 
-def render_template(source, rule, context):
-    with open(source) as s:
-        with open(rule, 'w') as t:
-            t.write(s.read().format_map(context))
+
+def render_percent_template(filename, destination, context, sudo=False):
+    with open(filename) as f:
+        with NamedTemporaryFile('w') as output:
+            output.write(f.read() % context)
+            run(f'{sudo_cmd(sudo)} cp {output.name} {destination}')
+
+
+def render_template(filename, destination, context, sudo=False):
+    with open(filename) as f:
+        with NamedTemporaryFile('w') as output:
+            output.write(f.read().format_map(context))
+            sudo_cmd = 'sudo' if sudo else ''
+            run(f'{sudo_cmd(sudo)} cp {output.name} {destination}')
+
+
+def sudo_cmd(user=None):
+    if not user:
+        return ''
+
+    if user is True:
+        return 'sudo '
+
+    return f'sudo -u {user} '
 
 
 def symlink(source, rule):
