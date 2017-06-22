@@ -35,7 +35,7 @@ class PythonPackage(Rule):
         run(f'{rule.pip} install {packages}')
 
 
-class PyEnv(Rule):
+class Virtualenv(Rule):
     def __init__(self, target, dependencies=None):
         if not dependencies:
             dependencies = []
