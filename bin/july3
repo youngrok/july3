@@ -1,0 +1,5 @@
+#!/usr/bin/env python3.6
+import july3.cli
+
+
+july3.cli.run()

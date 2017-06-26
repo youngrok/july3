@@ -1,14 +1,17 @@
 import os
 
 
+class TargetNotFound(Exception):
+    pass
+
+
 class RuleGraph:
 
     def __init__(self):
         self.rules = {}
 
-    def register(self, rule):
-        self.rules[str(rule.target)] = rule
-        self.rules[rule.command.__name__] = rule
+    def register(self, name, rule):
+        self.rules[name] = rule
 
     def find_rule(self, dependency):
         if isinstance(dependency, Rule):
@@ -23,7 +26,11 @@ class RuleGraph:
         if not target_name:
             target_name = next(iter(self.rules.keys()))
 
-        self.rules[target_name].make()
+        try:
+            self.rules[target_name].make()
+        except KeyError:
+            target_names = '\n'.join(self.rules.keys())
+            raise TargetNotFound(f'{target_name} not found.\nAvaiable targets:\n{target_names}')
 
 
 rules = RuleGraph()
@@ -34,6 +41,7 @@ class Rule:
     def __init__(self, target, dependencies=None):
         self.target = target
         self.dependencies = dependencies if dependencies else []
+        rules.register(str(self.target), self)
 
     def make(self):
         need_update = False
@@ -61,7 +69,7 @@ class Rule:
 
     def __call__(self, command):
         self.command = command
-        rules.register(self)
+        rules.register(command.__name__, self)
         return self
 
     def is_made(self):
