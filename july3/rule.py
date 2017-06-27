@@ -26,11 +26,11 @@ class RuleGraph:
         if not target_name:
             target_name = next(iter(self.rules.keys()))
 
-        try:
-            self.rules[target_name].make()
-        except KeyError:
-            target_names = '\n'.join(self.rules.keys())
+        if target_name not in self.rules:
+            target_names = '\n'.join([' - ' + k for k in self.rules.keys()])
             raise TargetNotFound(f'{target_name} not found.\nAvaiable targets:\n{target_names}')
+
+        self.rules[target_name].make()
 
 
 rules = RuleGraph()
@@ -38,9 +38,10 @@ rules = RuleGraph()
 
 class Rule:
 
-    def __init__(self, target, dependencies=None):
+    def __init__(self, target, dependencies=None, **options):
         self.target = target
         self.dependencies = dependencies if dependencies else []
+        self.options = options
         rules.register(str(self.target), self)
 
     def make(self):
@@ -60,7 +61,7 @@ class Rule:
             return
 
         if not hasattr(self, 'command'):
-            raise NoCommandSpecified(self.target)
+            raise NoCommandSpecified('Rule:' + str(self.target))
 
         self.command(self)
 

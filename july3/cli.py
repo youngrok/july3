@@ -6,13 +6,14 @@ from july3.rule import rules, Rule
 
 
 @argh.arg('--vars', nargs='*')
-def main(*targets, **kwargs):
+@argh.arg('--print-vars')
+def make(*targets, **kwargs):
     for var in kwargs.get('vars') or []:
         k, v = var.split('=')
         env[k] = v
-        print(k, v)
 
-    print(env)
+    if kwargs.get('print-vars'):
+        print(env)
 
     if targets:
         for target in targets:
@@ -21,7 +22,7 @@ def main(*targets, **kwargs):
         rules.make()
 
 
-def run(rules_dict=None):
+def main(rules_dict=None):
     if not rules_dict:
         caller_frame = inspect.stack()[1]
         rules_dict = dict(inspect.getmembers(inspect.getmodule(caller_frame[0])))
@@ -30,4 +31,4 @@ def run(rules_dict=None):
         if isinstance(rule, Rule):
             rules.register(name, rule)
 
-    argh.dispatch_command(main)
+    argh.dispatch_command(make)
