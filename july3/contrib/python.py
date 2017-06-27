@@ -2,25 +2,22 @@ import os
 
 from july3 import env
 from july3.rule import Rule
-from july3.util import run
+from july3.util import run, sudo_cmd
 
 
 class PythonPackage(Rule):
 
-    def __init__(self, *packages, pip='pip3', virtualenv=None, sudo=False, dependencies=None):
+    def __init__(self, *packages, dependencies=None, pip='pip3', virtualenv=None, sudo=False):
         self.packages = packages
-        self.virtualenv = virtualenv
         self.pip = pip
-        if virtualenv:
-            self.pip = self.virtualenv + '/bin/' + self.pip
-        if sudo:
-            self.pip = 'sudo ' + self.pip
+        self.virtualenv = virtualenv
+        self.sudo = sudo
 
         super().__init__(str(self), dependencies)
 
     def is_made(self):
         return set(self.packages).issubset(
-            {package.split(' ')[0] for package in run('{0} list'.format(self.pip), capture=True).stdout.splitlines()}
+            {package.split(' ')[0] for package in run('{0} list --format=legacy'.format(self.pip), capture=True).stdout.splitlines()}
         )
 
     def updated(self):
@@ -32,14 +29,47 @@ class PythonPackage(Rule):
     @staticmethod
     def command(rule):
         packages = ' '.join(rule.packages)
-        run(f'{rule.pip} install {packages}')
+        pip(f'install {packages}', pip=rule.pip, virtualenv=rule.virtualenv, sudo=rule.sudo)
+
+
+def pip(command, pip='pip3', virtualenv=None, sudo=False):
+    pip_cmd = pip
+
+    if virtualenv:
+        pip_cmd = virtualenv + '/bin/' + pip_cmd
+
+    pip_cmd = sudo_cmd(sudo) + pip_cmd
+    run(f'{pip_cmd} {command}')
+
+
+class PythonRequirements(Rule):
+    def __init__(self, requirements, dependencies=None, pip='pip3', virtualenv=None, sudo=False):
+
+        self.requirements = requirements
+        self.pip = pip
+        self.virtualenv = virtualenv
+        self.sudo = sudo
+
+        super().__init__(str(self), dependencies)
+
+    def is_made(self):
+        return False
+
+    def updated(self):
+        return 0
+
+    def __str__(self):
+        return f'pip install -r {requirements}'
+
+    @staticmethod
+    def command(rule):
+        pip(f'install -r {requirements}')
 
 
 class Virtualenv(Rule):
-    def __init__(self, target, dependencies=None):
-        if not dependencies:
-            dependencies = []
-        dependencies.append(PythonPackage('virtualenv', sudo=True))
+    def __init__(self, target, python='python', dependencies=None):
+        self.python = python
+
         super().__init__(target, dependencies)
 
     def is_made(self):
@@ -52,4 +82,4 @@ class Virtualenv(Rule):
 
     @staticmethod
     def command(rule):
-        run('virtualenv {virtualenv}'.format_map(env))
+        run(f'{rule.python} -m venv {env.virtualenv}')
