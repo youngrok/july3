@@ -1,9 +1,9 @@
-import logging
+import os
 import subprocess
-from subprocess import CalledProcessError
 
-import sys
 from tempfile import NamedTemporaryFile
+
+from contextlib import contextmanager
 
 
 class ProcessResult:
@@ -13,9 +13,11 @@ class ProcessResult:
         self.returncode = returncode
 
 
-def run(command, capture=False):
+def run(command, capture=False, sudo=False):
     if capture:
         return subprocess.run(command, shell=True, encoding='utf8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    command = f'{sudo_cmd(sudo)} {command}'
 
     print(command)
     return subprocess.run(command, shell=True)
@@ -52,3 +54,9 @@ def symlink(source, rule):
     run('sudo ln -s %s %s' % (source, rule))
 
 
+@contextmanager
+def cd(path):
+    old = os.getcwd()
+    os.chdir(path)
+    yield
+    os.chdir(old)
