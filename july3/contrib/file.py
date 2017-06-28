@@ -2,7 +2,7 @@ import os
 
 from july3 import env
 from july3.rule import Rule
-from july3.util import render_percent_template, run
+from july3.util import render_percent_template, sh
 
 
 class TemplateRendered(Rule):
@@ -34,7 +34,7 @@ class CommandRule(Rule):
         super().__init__(command, dependencies=dependencies)
 
     def is_made(self):
-        return run(f'type {self.target}').returncode == 0
+        return sh(f'type {self.target}').returncode == 0
 
     def updated(self):
         return 0

@@ -1,7 +1,7 @@
 from tempfile import NamedTemporaryFile
 from mako.template import Template
 
-from july3.util import run
+from july3.util import sh
 
 
 def render_template(source, rule, context, sudo=False):
@@ -9,5 +9,5 @@ def render_template(source, rule, context, sudo=False):
         tmp.file.write(Template(filename=source).render(**context))
         tmp.file.flush()
         sudo_cmd = 'sudo ' if sudo else ''
-        run('%scp %s %s' % (sudo_cmd, tmp.name, rule))
-        run('%schmod a+r %s' % (sudo_cmd, rule, ))
+        sh('%scp %s %s' % (sudo_cmd, tmp.name, rule))
+        sh('%schmod a+r %s' % (sudo_cmd, rule, ))

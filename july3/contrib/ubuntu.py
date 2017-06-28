@@ -1,5 +1,5 @@
 from july3.rule import Rule
-from july3.util import run
+from july3.util import sh
 
 
 class DebianPackage(Rule):
@@ -9,7 +9,7 @@ class DebianPackage(Rule):
         super().__init__(str(self), dependencies)
 
     def is_made(self):
-        result = run("dpkg-query -Wf'${db:Status-abbrev}' %s" % ' '.join(self.packages), capture=True)
+        result = sh("dpkg-query -Wf'${db:Status-abbrev}' %s" % ' '.join(self.packages), capture=True)
         return result.returncode == 0 and all([status == 'ii' for status in result.stdout.split(' ') if status])
 
     def updated(self):
@@ -20,13 +20,13 @@ class DebianPackage(Rule):
 
     @staticmethod
     def command(rule):
-        run('sudo apt-get install --quiet -y %s' % ' '.join(rule.packages))
+        sh('sudo apt-get install --quiet -y %s' % ' '.join(rule.packages))
 
 
 class Command(Rule):
 
     def is_made(self):
-        return run('type {0}'.format(self.target), capture=True).returncode == 0
+        return sh('type {0}'.format(self.target), capture=True).returncode == 0
 
 
     def updated(self):

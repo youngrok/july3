@@ -2,7 +2,7 @@ import os
 
 from july3 import env
 from july3.rule import Rule
-from july3.util import run, sudo_cmd
+from july3.util import sh, sudo_cmd
 
 
 class PythonPackage(Rule):
@@ -17,7 +17,7 @@ class PythonPackage(Rule):
 
     def is_made(self):
         return set(self.packages).issubset(
-            {package.split(' ')[0] for package in run('{0} list --format=legacy'.format(self.pip), capture=True).stdout.splitlines()}
+            {package.split(' ')[0] for package in sh('{0} list --format=legacy'.format(self.pip), capture=True).stdout.splitlines()}
         )
 
     def updated(self):
@@ -39,7 +39,7 @@ def pip(command, pip='pip3', virtualenv=None, sudo=False):
         pip_cmd = virtualenv + '/bin/' + pip_cmd
 
     pip_cmd = sudo_cmd(sudo) + pip_cmd
-    run(f'{pip_cmd} {command}')
+    sh(f'{pip_cmd} {command}')
 
 
 class PythonRequirements(Rule):
@@ -82,4 +82,4 @@ class Virtualenv(Rule):
 
     @staticmethod
     def command(rule):
-        run(f'{rule.python} -m venv {env.virtualenv}')
+        sh(f'{rule.python} -m venv {env.virtualenv}')

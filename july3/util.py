@@ -13,7 +13,7 @@ class ProcessResult:
         self.returncode = returncode
 
 
-def run(command, capture=False, sudo=False):
+def sh(command, capture=False, sudo=False):
     if capture:
         return subprocess.run(command, shell=True, encoding='utf8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
@@ -28,7 +28,7 @@ def render_percent_template(filename, destination, context, sudo=False):
     with open(filename) as f:
         with NamedTemporaryFile('w') as output:
             output.write(f.read() % context)
-            run(f'{sudo_cmd(sudo)} cp {output.name} {destination}')
+            sh(f'{sudo_cmd(sudo)} cp {output.name} {destination}')
 
 
 def render_template(filename, destination, context, sudo=False):
@@ -36,7 +36,7 @@ def render_template(filename, destination, context, sudo=False):
         with NamedTemporaryFile('w') as output:
             output.write(f.read().format_map(context))
             sudo_cmd = 'sudo' if sudo else ''
-            run(f'{sudo_cmd(sudo)} cp {output.name} {destination}')
+            sh(f'{sudo_cmd(sudo)} cp {output.name} {destination}')
 
 
 def sudo_cmd(user=None):
@@ -50,8 +50,8 @@ def sudo_cmd(user=None):
 
 
 def symlink(source, rule):
-    run('sudo rm -f %s' % (rule,))
-    run('sudo ln -s %s %s' % (source, rule))
+    sh('sudo rm -f %s' % (rule,))
+    sh('sudo ln -s %s %s' % (source, rule))
 
 
 @contextmanager

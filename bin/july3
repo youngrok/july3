@@ -2,4 +2,4 @@
 import july3.cli
 
 
-july3.cli.run()
+july3.cli.main()

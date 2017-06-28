@@ -2,7 +2,7 @@ import os.path
 
 from july3 import env
 from july3.rule import Rule
-from july3.util import run
+from july3.util import sh
 
 
 class GitPull(Rule):
@@ -18,6 +18,6 @@ class GitPull(Rule):
     @staticmethod
     def command(rule):
         if os.path.exists(rule.path):
-            run("cd %s; ssh-agent bash -c 'ssh-add %s; git pull'" % (rule.path, env.deploy_key_file))
+            sh("cd %s; ssh-agent bash -c 'ssh-add %s; git pull'" % (rule.path, env.deploy_key_file))
         else:
-            run("ssh-agent bash -c 'ssh-add %s; git clone %s %s'" % (env.deploy_key_file, rule.url, rule.path))
+            sh("ssh-agent bash -c 'ssh-add %s; git clone %s %s'" % (env.deploy_key_file, rule.url, rule.path))

@@ -2,14 +2,14 @@ import os
 import unittest
 
 from july3.contrib.postgres import PostgresUser, PostgresDatabase, PostgresConnection
-from july3.util import run
+from july3.util import sh
 
 
 class TestPostgresRule(unittest.TestCase):
 
     def tearDown(self):
-        run('dropdb j3db')
-        run('psql postgres -c "DROP USER j3test"')
+        sh('dropdb j3db')
+        sh('psql postgres -c "DROP USER j3test"')
 
     def test_postgres_user_and_db(self):
 
@@ -18,7 +18,7 @@ class TestPostgresRule(unittest.TestCase):
 
         postgres_db.make()
 
-        self.assertEqual('1', run(r'psql -U j3test j3db -t -c "select 1"', capture=True).stdout.strip())
+        self.assertEqual('1', sh(r'psql -U j3test j3db -t -c "select 1"', capture=True).stdout.strip())
 
 
     def test_postgres_connection(self):
@@ -27,6 +27,6 @@ class TestPostgresRule(unittest.TestCase):
 
         postgres.make()
 
-        run(r'psql -U j3test j3db -t -c "select 1"')
-        self.assertEqual('1', run(r'psql -U j3test j3db -t -c "select 1"', capture=True).stdout.strip())
+        sh(r'psql -U j3test j3db -t -c "select 1"')
+        self.assertEqual('1', sh(r'psql -U j3test j3db -t -c "select 1"', capture=True).stdout.strip())
 

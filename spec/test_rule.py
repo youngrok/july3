@@ -7,7 +7,7 @@ from mako.template import Template
 from july3 import env
 from july3.rule import NoCommandSpecified, Rule
 from july3.contrib.python import PythonPackage
-from july3.util import run
+from july3.util import sh
 
 
 class TestFileRule(unittest.TestCase):
@@ -54,11 +54,11 @@ class TestNonFileRule(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree('test-build', ignore_errors=True)
-        run('yes | pip uninstall toc')
+        sh('yes | pip uninstall toc')
 
     def test_non_file_rule(self):
         PythonPackage('toc').make()
-        self.assertTrue('toc' in run('pip show toc', capture=True).stdout)
+        self.assertTrue('toc' in sh('pip show toc', capture=True).stdout)
 
     def test_depend_non_file_rule(self):
 
@@ -74,5 +74,5 @@ class TestNonFileRule(unittest.TestCase):
 
         nginx_site_file.make()
 
-        self.assertTrue('toc' in run('pip show toc', capture=True).stdout)
+        self.assertTrue('toc' in sh('pip show toc', capture=True).stdout)
         self.assertTrue(env.web_server_name in open(env.build_path + env.project_name).read())

@@ -1,6 +1,6 @@
 from july3 import env
 from july3.rule import Rule
-from july3.util import run
+from july3.util import sh
 
 
 class PostgresUser(Rule):
@@ -57,7 +57,7 @@ class PostgresDatabase(Rule):
         if 'psql_sudo' in env:
             cmd = 'sudo -u {0} '.format(env.psql_sudo) + cmd
 
-        run(cmd)
+        sh(cmd)
 
 
 class PostgresConnection(PostgresDatabase):
@@ -78,4 +78,4 @@ def psql(query, options='', capture=False):
     if 'psql_sudo' in env:
         command = 'sudo -u {0} '.format(env.psql_sudo) + command
 
-    return run(command, capture=capture).stdout
+    return sh(command, capture=capture).stdout
