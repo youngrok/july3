@@ -9,7 +9,8 @@ class DebianPackage(Rule):
         super().__init__(str(self), dependencies)
 
     def is_made(self):
-        return all([status == 'ii' for status in run("dpkg-query -Wf'${db:Status-abbrev}' %s" % ' '.join(self.packages), capture=True).stdout.split(' ') if status])
+        result = run("dpkg-query -Wf'${db:Status-abbrev}' %s" % ' '.join(self.packages), capture=True)
+        return result.returncode == 0 and all([status == 'ii' for status in result.stdout.split(' ') if status])
 
     def updated(self):
         return 0
