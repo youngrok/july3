@@ -34,5 +34,7 @@ class CommandRule(Rule):
         super().__init__(command, dependencies=dependencies)
 
     def is_made(self):
-        print('bower command exists:', run(f'type {self.command}').returncode)
-        return run(f'type {self.command}').returncode == 0
+        return run(f'type {self.target}').returncode == 0
+
+    def updated(self):
+        return 0
