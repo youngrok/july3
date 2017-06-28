@@ -28,6 +28,7 @@ def render_percent_template(filename, destination, context, sudo=False):
     with open(filename) as f:
         with NamedTemporaryFile('w') as output:
             output.write(f.read() % context)
+            output.flush()
             sh(f'{sudo_cmd(sudo)} cp {output.name} {destination}')
 
 
@@ -35,7 +36,7 @@ def render_template(filename, destination, context, sudo=False):
     with open(filename) as f:
         with NamedTemporaryFile('w') as output:
             output.write(f.read().format_map(context))
-            sudo_cmd = 'sudo' if sudo else ''
+            output.flush()
             sh(f'{sudo_cmd(sudo)} cp {output.name} {destination}')
 
 
