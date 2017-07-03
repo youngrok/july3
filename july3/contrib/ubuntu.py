@@ -20,7 +20,7 @@ class DebianPackage(Rule):
 
     @staticmethod
     def command(rule):
-        sh('sudo apt-get install --quiet -y %s' % ' '.join(rule.packages))
+        sh('DEBIAN_FRONTEND=noninteractive sudo apt-get install --quiet -y %s' % ' '.join(rule.packages))
 
 
 class Command(Rule):
