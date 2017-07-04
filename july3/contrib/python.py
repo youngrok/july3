@@ -59,11 +59,11 @@ class PythonRequirements(Rule):
         return 0
 
     def __str__(self):
-        return f'pip install -r {self.requirements}'
+        return f'pip install -r --ignore-installed {self.requirements}'
 
     @staticmethod
     def command(rule):
-        pip(f'install -r {rule.requirements}')
+        pip(f'install -r {rule.requirements}', pip=rule.pip, virtualenv=rule.virtualenv, sudo=rule.sudo)
 
 
 class Virtualenv(Rule):
