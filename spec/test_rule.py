@@ -5,7 +5,7 @@ import unittest
 from mako.template import Template
 
 from july3 import env
-from july3.rule import NoCommandSpecified, Rule
+from july3.rule import NoCommandSpecified, Rule, Target
 from july3.contrib.python import PythonPackage
 from july3.util import sh
 
@@ -25,12 +25,12 @@ class TestFileRule(unittest.TestCase):
 
         @Rule(f'test-build/{env.project_name}', dependencies=['files/nginx-site.mako', 'test-build'])
         def nginx_site_file(rule):
-            with open(rule.target, 'w') as f:
+            with open(rule.target.name, 'w') as f:
                 f.write(Template(filename=rule.dependencies[0]).render(**env))
 
         @Rule('test-build')
         def build_dir(rule):
-            os.makedirs(rule.target)
+            os.makedirs(rule.target.name)
 
         nginx_site_file.make()
         self.assertTrue(env.web_server_name in open(env.build_path + env.project_name).read())
@@ -68,7 +68,7 @@ class TestNonFileRule(unittest.TestCase):
 
         @Rule(f'test-build/{env.project_name}', dependencies=['files/nginx-site.mako', toc_install])
         def nginx_site_file(rule):
-            with open(rule.target, 'w') as f:
+            with open(rule.target.name, 'w') as f:
                 f.write(Template(filename=rule.dependencies[0]).render(**env))
 
 
@@ -76,3 +76,19 @@ class TestNonFileRule(unittest.TestCase):
 
         self.assertTrue('toc' in sh('pip show toc', capture=True).stdout)
         self.assertTrue(env.web_server_name in open(env.build_path + env.project_name).read())
+
+
+class TestCallableTarget(unittest.TestCase):
+
+    def test_callable_target(self):
+
+        started = 0
+        @Rule(Target('rabbitmq started', lambda name: started))
+        def nginx_start(rule):
+            nonlocal started
+            started += 1
+
+        nginx_start.make()
+        self.assertEqual(1, started)
+        nginx_start.make()
+        self.assertEqual(1, started)

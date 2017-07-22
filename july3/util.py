@@ -14,14 +14,13 @@ class ProcessResult:
 
 
 def sh(command, capture=False, sudo=False):
+    command = f'{sudo_cmd(sudo)} {command}'
+
     if capture:
         return subprocess.run(command, shell=True, encoding='utf8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    command = f'{sudo_cmd(sudo)} {command}'
-
     print(command)
-    return subprocess.run(command, shell=True)
-
+    return subprocess.run(command, shell=True, check=True)
 
 
 def render_percent_template(filename, destination, context, sudo=False):

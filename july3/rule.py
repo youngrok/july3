@@ -39,7 +39,7 @@ rules = RuleGraph()
 class Rule:
 
     def __init__(self, target, dependencies=None, **options):
-        self.target = target
+        self.target = target if isinstance(target, Target) else FileTarget(target)
         self.dependencies = dependencies if dependencies else []
         self.options = options
         rules.register(str(self.target), self)
@@ -51,10 +51,10 @@ class Rule:
             dependency_rule = rules.find_rule(d)
             dependency_rule.make()
 
-            if dependency_rule.updated() > self.updated():
+            if dependency_rule.target.updated() > self.target.updated():
                 need_update = True
 
-        if not self.is_made():
+        if not self.target.is_made():
             need_update = True
 
         if not need_update:
@@ -73,23 +73,37 @@ class Rule:
         rules.register(command.__name__, self)
         return self
 
+
+class Target:
+
+    def __init__(self, name, testFn):
+        self.name = name
+        self.testFn = testFn
+
     def is_made(self):
-        return os.path.exists(self.target)
+        return self.testFn(self.name)
+
+    def updated(self):
+        return 0
+
+    def __str__(self):
+        return self.name
+
+
+class FileTarget(Target):
+
+    def __init__(self, path):
+        self.name = path
+
+    def is_made(self):
+        return os.path.exists(self.name)
 
     def updated(self):
         if self.is_made():
-            return os.path.getmtime(self.target)
+            return os.path.getmtime(self.name)
 
         return 0
 
-
-class VirtualRule(Rule):
-
-    def is_made(self):
-        return False
-
-    def updated(self):
-        return 0
 
 
 class NoCommandSpecified(Exception):

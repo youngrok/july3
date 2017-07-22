@@ -1,22 +1,17 @@
 from july3 import env
-from july3.rule import Rule
+from july3.rule import Rule, Target
 from july3.util import sh
 
 
 class PostgresUser(Rule):
 
     def __init__(self, user, password, password_encrypted=False, superuser=False, dependencies=None):
+        super().__init__('postgresuser:%s' % (user, ), dependencies)
+        self.target = Target(f"SELECT COUNT(*) FROM pg_user WHERE usename = '{user}';", lambda name: int(psql(name, '-t -A', capture=True)))
         self.user = user
         self.password = password
         self.password_encrypted = password_encrypted
         self.superuser = superuser
-        super().__init__('postgresuser:%s' % (self.user, ), dependencies)
-
-    def is_made(self):
-        return psql("SELECT COUNT(*) FROM pg_user WHERE usename = '%s';" % self.user, '-t -A', capture=True).strip() != '0'
-
-    def updated(self):
-        return 0
 
     @staticmethod
     def command(rule):
@@ -32,16 +27,11 @@ class PostgresUser(Rule):
 class PostgresDatabase(Rule):
 
     def __init__(self, dbname, user, password, dependencies=None):
+        super().__init__(f'postgresdb:{dbname}/{user}', dependencies)
+        self.target = Target(r'\l %s' % dbname, lambda name: psql(name, '-t -A', capture=True))
         self.dbname = dbname
         self.user = user
         self.password = password
-        super().__init__('postgresdb:%s/%s' % (self.dbname, self.user), dependencies)
-
-    def is_made(self):
-        return psql(r'\l %s' % self.dbname, '-t -A', capture=True)
-
-    def updated(self):
-        return 0
 
     @staticmethod
     def command(rule):

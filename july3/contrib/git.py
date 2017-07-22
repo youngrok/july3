@@ -12,8 +12,10 @@ class GitPull(Rule):
         self.url = url
         self.path = path
 
+        self.executed = False
+
     def is_made(self):
-        return False
+        return self.executed
 
     @staticmethod
     def command(rule):
@@ -21,3 +23,5 @@ class GitPull(Rule):
             sh("cd %s; ssh-agent bash -c 'ssh-add %s; git pull'" % (rule.path, env.deploy_key_file))
         else:
             sh("ssh-agent bash -c 'ssh-add %s; git clone %s %s'" % (env.deploy_key_file, rule.url, rule.path))
+
+        rule.executed = True
