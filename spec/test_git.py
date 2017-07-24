@@ -17,10 +17,12 @@ class TestGit(unittest.TestCase):
 
         @Rule('test-build')
         def build_dir(rule):
-            os.makedirs(rule.target.name)
+            os.makedirs(rule.target)
 
         source_update = GitPull('git@github.com:youngrok/july3.git', 'test-build/july3', dependencies=[build_dir])
         source_update.make()
+
+        self.assertTrue(source_update.is_made())
 
         self.assertTrue(os.path.exists('test-build/july3/setup.py'))
 

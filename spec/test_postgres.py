@@ -20,8 +20,7 @@ class TestPostgresRule(unittest.TestCase):
         postgres_db.make()
         self.assertEqual('1', sh(r'psql -U j3test j3db -t -c "select 1"', capture=True).stdout.strip())
 
-        postgres_db.make()
-        self.assertEqual('1', sh(r'psql -U j3test j3db -t -c "select 1"', capture=True).stdout.strip())
+        self.assertTrue(postgres_db.is_made())
 
     def test_postgres_connection(self):
 
@@ -32,5 +31,6 @@ class TestPostgresRule(unittest.TestCase):
         sh(r'psql -U j3test j3db -t -c "select 1"')
         self.assertEqual('1', sh(r'psql -U j3test j3db -t -c "select 1"', capture=True).stdout.strip())
 
+        self.assertTrue(postgres.is_made())
         postgres.make()
 
