@@ -39,18 +39,20 @@ def pip(command, pip='pip3', virtualenv=None, sudo=False):
         pip_cmd = virtualenv + '/bin/' + pip_cmd
 
     pip_cmd = sudo_cmd(sudo) + pip_cmd
-    sh(f'{pip_cmd} {command}')
+    sh(f'{pip_cmd} {command} | grep -v "Requirement already satisfied"; test ${{PIPESTATUS[0]}} -eq 0', executable='/bin/bash')
+
 
 
 class PythonRequirements(Rule):
+
     def __init__(self, requirements, dependencies=None, pip='pip3', virtualenv=None, sudo=False):
 
         self.requirements = requirements
+        super().__init__(str(self), [requirements] + (dependencies or []))
+
         self.pip = pip
         self.virtualenv = virtualenv
         self.sudo = sudo
-
-        super().__init__(str(self), dependencies)
 
     def is_made(self):
         return False
@@ -59,7 +61,7 @@ class PythonRequirements(Rule):
         return 0
 
     def __str__(self):
-        return f'pip install -r --ignore-installed {self.requirements}'
+        return f'pip install -r {self.requirements}'
 
     @staticmethod
     def command(rule):
@@ -67,6 +69,7 @@ class PythonRequirements(Rule):
 
 
 class Virtualenv(Rule):
+
     def __init__(self, target, python='python', dependencies=None):
         self.python = python
 

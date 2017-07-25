@@ -13,14 +13,15 @@ class ProcessResult:
         self.returncode = returncode
 
 
-def sh(command, capture=False, sudo=False):
+def sh(command, capture=False, sudo=False, **kwargs):
     command = f'{sudo_cmd(sudo)} {command}'
 
     if capture:
-        return subprocess.run(command, shell=True, encoding='utf8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return subprocess.run(command, shell=True, encoding='utf8',
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
 
     print(command)
-    return subprocess.run(command, shell=True, check=True)
+    return subprocess.run(command, shell=True, check=True, **kwargs)
 
 
 def render_percent_template(filename, destination, context, sudo=False):
