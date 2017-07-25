@@ -34,7 +34,7 @@ class CommandRule(Rule):
         super().__init__(command, dependencies=dependencies)
 
     def is_made(self):
-        return sh(f'type {self.target}').returncode == 0
+        return sh(f'type {self.target}', capture=True).returncode == 0
 
     def updated(self):
         return 0
