@@ -1,5 +1,6 @@
 import os.path
 
+import time
 from july3 import env
 from july3.rule import Rule
 from july3.util import sh
@@ -15,6 +16,9 @@ class GitPull(Rule):
         self.executed = False
 
     def is_made(self):
+        return self.executed > 0
+
+    def updated(self):
         return self.executed
 
     @staticmethod
@@ -24,4 +28,4 @@ class GitPull(Rule):
         else:
             sh("ssh-agent bash -c 'ssh-add %s; git clone %s %s'" % (env.deploy_key_file, rule.url, rule.path))
 
-        rule.executed = True
+        rule.executed = time.time()
