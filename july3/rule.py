@@ -93,18 +93,13 @@ class OnceRule(Rule):
         return time.time() if self.is_made() else 0
 
 
-class CallableTargetRule(Rule):
+class CallableTargetRule(OnceRule):
 
     def is_made(self):
         if not callable(self.target):
             raise TypeError('target is not callable.')
 
-        self.executed = time.time()
-
         return self.target()
-
-    def updated(self):
-        return getattr(self, 'executed', 0)
 
 
 class NoCommandSpecified(Exception):
