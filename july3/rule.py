@@ -87,6 +87,12 @@ class Rule:
         return 0
 
 
+class OnceRule(Rule):
+
+    def updated(self):
+        return time.time() if self.is_made() else 0
+
+
 class CallableTargetRule(Rule):
 
     def is_made(self):
